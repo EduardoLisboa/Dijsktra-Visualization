@@ -1,4 +1,4 @@
-# Dijkstra Visualization Algorithm
+# Dijkstra Algorithm Visualization
 
 An algorithm to visualize [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) search algorithm working
 
