@@ -4,6 +4,8 @@ An algorithm to visualize [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_
 
 For the required libraries, see the [requirements](../master/requirements.txt) file.
 
+For a similar visualizator, for the A* algorithm, go [here](https://github.com/EduardoLisboa/AStar-Visualization).
+
 ### To run from the terminal, use the command:
 * Windows:
 ```
