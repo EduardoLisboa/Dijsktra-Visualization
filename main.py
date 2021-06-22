@@ -1,92 +1,11 @@
 import pygame
+from random import randint
 from queue import PriorityQueue
-
-RED =       (255,   0,   0)
-GREEN =     (  0, 255,   0)
-BLUE =      (  0,   0, 255)
-YELLOW =    (255, 255,   0)
-WHITE =     (255, 255, 255)
-BLACK =     (  0,   0,   0)
-PURPLE =    (128,   0, 128)
-ORANGE =    (255, 165,   0)
-GREY =      (128, 128, 128)
-TURQUOISE = ( 64, 224, 208)
+from spot import Spot, WHITE, GREY
 
 WIDTH = HEIGHT = 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('A* Path Finding Visualizer')
-
-class Spot:
-
-    def __init__(self, row, col, width, total_rows):
-        self.row = row
-        self.col = col
-        self.x = row * width
-        self.y = col * width
-        self.color = WHITE
-        self.neighbors = []
-        self.width = width
-        self.total_rows = total_rows
-    
-    def get_pos(self):
-        return self.row, self.col
-
-    def is_closed(self):
-        return self.color == RED
-    
-    def is_open(self):
-        return self.color == GREEN
-    
-    def is_barrier(self):
-        return self.color == BLACK
-
-    def is_start(self):
-        return self.color == ORANGE
-    
-    def is_end(self):
-        return self.color == TURQUOISE
-    
-    def reset(self):
-        self.color = WHITE
-    
-    def make_closed(self):
-        self.color = RED
-    
-    def make_open(self):
-        self.color = GREEN
-    
-    def make_barrier(self):
-        self.color = BLACK
-    
-    def make_start(self):
-        self.color = ORANGE
-
-    def make_end(self):
-        self.color = TURQUOISE
-    
-    def make_path(self):
-        self.color = PURPLE
-    
-    def draw(self, win):
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.width))
-    
-    def update_neighbors(self, grid):
-        self.neighbors = []
-        # DOWN
-        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
-            self.neighbors.append(grid[self.row + 1][self.col])
-        # UP
-        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier():
-            self.neighbors.append(grid[self.row - 1][self.col])
-        # RIGHT
-        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier():
-            self.neighbors.append(grid[self.row][self.col + 1])
-        # LEFT
-        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier():
-            self.neighbors.append(grid[self.row][self.col - 1])
-
-    def __lt__(self, other):
-        return False
 
 
 def reconstruct_path(came_from, current, draw):
@@ -198,8 +117,9 @@ def main(win, width):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
-            if pygame.mouse.get_pressed()[0]:   # Left click
+
+            # LEFT MOUSE CLICK
+            if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_pos(pos, ROWS, width)
 
@@ -216,7 +136,8 @@ def main(win, width):
                     elif spot != end and spot != start:
                         spot.make_barrier()
             
-            elif pygame.mouse.get_pressed()[2]: # Right click
+            # RIGHT MOUSE CLICK
+            elif pygame.mouse.get_pressed()[2]:
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_pos(pos, ROWS, width)
 
@@ -231,6 +152,11 @@ def main(win, width):
                         end = None
             
             if event.type == pygame.KEYDOWN:
+                # LEAVES THE PROGRAM
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+
+                # START THE ALGORITHM
                 if event.key == pygame.K_SPACE and start and end:
                     for row in grid:
                         for spot in row:
@@ -238,11 +164,44 @@ def main(win, width):
                     
                     dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
                 
+                # CLEAR THE SCREEN
                 if event.key == pygame.K_c:
                     start = None
                     end = None
                     grid = make_grid(ROWS, width)
+                
+                # MAKE RANDOM MAZE
+                if event.key == pygame.K_r:
+                    start = None
+                    end = None
+                    grid = make_grid(ROWS, width)
+                    row, col = randint(1, ROWS - 2), randint(1, ROWS - 2)
+                    spot = grid[row][col]
+                    spot.make_start()
+                    start = spot
 
+                    row, col = randint(1, ROWS - 2), randint(1, ROWS - 2)
+                    while row == spot.row and col == spot.col or abs(row - spot.row) + abs(col - spot.col) < 40:
+                        row, col = randint(1, ROWS - 2), randint(1, ROWS - 2)
+                    
+                    spot = grid[row][col]
+                    spot.make_end()
+                    end = spot
+
+                    barriers = []
+                    for _ in range(1, ROWS - 1):
+                        for _ in range(1, ROWS - 1):
+                            row, col = randint(1, ROWS - 2), randint(1, ROWS - 2)
+                            spot = grid[row][col]
+                            while spot in barriers or spot == start or spot == end:
+                                row, col = randint(1, ROWS - 2), randint(1, ROWS - 2)
+                                spot = grid[row][col]
+                            
+                            spot.make_barrier()
+                            barriers.append(spot)
+
+                            if len(barriers) >= ROWS ** 2 * 0.3:
+                                break
 
     pygame.quit()
 
