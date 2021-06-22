@@ -23,4 +23,6 @@ You can hold the mouse button and drag on the screen both when drawing and erasi
 
 If you want to clear the entire grid, press **"c"** on your keyboard.
 
-Press the **spacebar** to start the algorithm. When it is finished, you can press **"c"** and try again.
+If you want to generate a random maze, press **"r"** on your keyboard.
+
+Press the **spacebar** to start the algorithm. When it is finished, you can press **"c"** or **"r"** and try again.
