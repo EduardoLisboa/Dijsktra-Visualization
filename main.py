@@ -5,7 +5,7 @@ from spot import Spot, WHITE, GREY
 
 WIDTH = HEIGHT = 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('A* Path Finding Visualizer')
+pygame.display.set_caption('Dijkstra Path Finding Visualizer')
 
 
 def reconstruct_path(came_from, current, draw):
